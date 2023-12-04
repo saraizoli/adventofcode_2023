@@ -15,8 +15,12 @@ public record Point(int x, int y) {
     public static Point UL = new Point(-1, 1);
     public static Point UR = new Point(1, 1);
 
-    private static final Point[] DIRSA = new Point[] {U, D, L, R};
-    public static final Map<String, Point> DIRS = Map.of("U", U, "D", D, "L", L, "R", R, ">", R, "<", L);
+    public static Point DL = new Point(-1, -1);
+    public static Point DR = new Point(1, -1);
+
+    private static final Point[] DIRS = new Point[] {U, D, L, R};
+    private static final Point[] DIRS_ALL = new Point[] {U, D, L, R, UL, UR, DL, DR};
+    public static final Map<String, Point> DIRS_MAP = Map.of("U", U, "D", D, "L", L, "R", R, ">", R, "<", L);
 
     public static Point from(String s) {
         String[] t = s.split(",");
@@ -52,7 +56,10 @@ public record Point(int x, int y) {
     }
 
     public Stream<Point> neighbours() {
-        return Arrays.stream(DIRSA).map(this::add);
+        return Arrays.stream(DIRS).map(this::add);
+    }
+    public Stream<Point> neighboursAll() {
+        return Arrays.stream(DIRS_ALL).map(this::add);
     }
 
     public Stream<Point> fromTo(Point to) {
