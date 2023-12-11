@@ -18,7 +18,7 @@ public record Point(int x, int y) {
     public static Point DL = new Point(-1, -1);
     public static Point DR = new Point(1, -1);
 
-    private static final Point[] DIRS = new Point[] {U, D, L, R};
+    public static final Point[] DIRS = new Point[] {U, D, L, R};
     private static final Point[] DIRS_ALL = new Point[] {U, D, L, R, UL, UR, DL, DR};
     public static final Map<String, Point> DIRS_MAP = Map.of("U", U, "D", D, "L", L, "R", R, ">", R, "<", L);
 
