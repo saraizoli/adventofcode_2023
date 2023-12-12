@@ -1,17 +1,17 @@
 package main.application;
 
-import main.day06.Day06;
+import main.day12.Day12;
 import main.utils.Day;
 
 public class Main {
     public static void main(String[] args) {
 
-        Day<?> day = new Day06();
+        Day<?> day = new Day12();
         day.printSolution1WithTime();
         day.printSolution2WithTime();
 
-        Day.printConstructionTime(Day06::new, 1000);
-        day.printSolution1WithTime(1000);
-        day.printSolution2WithTime(1000);
+//        Day.printConstructionTime(Day12::new, 1000);
+//        day.printSolution1WithTime(1000);
+//        day.printSolution2WithTime(1000);
     }
 }
