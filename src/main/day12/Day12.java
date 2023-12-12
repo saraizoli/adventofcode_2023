@@ -34,33 +34,28 @@ public class Day12 extends Day<Long> {
         if (cache.containsKey(key)) {
             return cache.get(key);
         }
-        if (code.isEmpty() && units.isEmpty()) {
-            return 1;
-        }
-        if (units.isEmpty()) {
-            return cacheAndReturn(key, code.contains("#") ? 0 : 1);
-        }
+        long l = countOptionsInner(code, units);
+        cache.put(key, l);
+        return l;
+    }
+
+    private long countOptionsInner(String code, List<Integer> units) {
+        if (code.isEmpty() && units.isEmpty()) return 1;
+        if (units.isEmpty()) return code.contains("#") ? 0 : 1;
+
         int l = code.length();
-        if (l < units.get(0)) {
-            return cacheAndReturn(key, 0);
-        }
+        if (l < units.get(0)) return 0;
+
         char c = code.charAt(0);
         if (c == '#') {
             int u = units.get(0);
-            if (code.substring(0, u).contains(".")) return cacheAndReturn(key, 0);
-            if (l > u && code.charAt(u) == '#') return cacheAndReturn(key, 0);
-            return cacheAndReturn(key, countOptions(code.substring(Math.min(l, u + 1)), units.subList(1, units.size())));
+            if (code.substring(0, u).contains(".")) return 0;
+            if (l > u && code.charAt(u) == '#') return 0;
+            return countOptions(code.substring(Math.min(l, u + 1)), units.subList(1, units.size()));
         }
         String tail = code.substring(1);
-        if (c == '.') {
-            return cacheAndReturn(key, countOptions(tail, units));
-        }
-        return cacheAndReturn(key, countOptions(tail, units) + countOptions("#" + tail, units));
-    }
-
-    private long cacheAndReturn(Row key, long l) {
-        cache.put(key, l);
-        return l;
+        if (c == '.') return countOptions(tail, units);
+        return countOptions(tail, units) + countOptions("#" + tail, units);
     }
 
     @Override
@@ -70,6 +65,7 @@ public class Day12 extends Day<Long> {
 
     @Override
     public Long getSolution2() {
+//        cache = new HashMap<>();
         return codes.stream()
                 .map(r -> new Row(
                         IntStream.range(0, 5).mapToObj(i -> r.code()).collect(Collectors.joining("?")),
