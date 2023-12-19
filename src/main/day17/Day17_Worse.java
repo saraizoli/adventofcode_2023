@@ -4,18 +4,17 @@ import main.utils.Day;
 import main.utils.Point;
 
 import java.util.*;
-import java.util.stream.IntStream;
 
-public class Day17 extends Day<Integer> {
+public class Day17_Worse extends Day<Integer> {
     private final List<String> input;
     private final Point C;
     private final Point E;
 
-    private Map<PointAndDir, Integer> dist = new HashMap<>();
-    private final PriorityQueue<PointAndDir> queue = new PriorityQueue<>(Comparator.comparingInt(state -> dist.getOrDefault(state, Integer.MAX_VALUE)));
-    private Set<PointAndDir> done = new HashSet<>();
+    private Map<CrucibleState, Integer> dist = new HashMap<>();
+    private final PriorityQueue<CrucibleState> queue = new PriorityQueue<>(Comparator.comparingInt(state -> dist.getOrDefault(state, Integer.MAX_VALUE)));
+    private Set<CrucibleState> done = new HashSet<>();
 
-    public Day17() {
+    public Day17_Worse() {
 //        input = getReader().readAsStringList("day17_sample.txt");
         input = getReader().readAsStringList(17);
         int h = input.size();
@@ -32,25 +31,27 @@ public class Day17 extends Day<Integer> {
         dist = new HashMap<>();
         queue.clear();
         done = new HashSet<>();
-        PointAndDir s = new PointAndDir(Point.O, Point.O);
+        CrucibleState s = new CrucibleState(Point.O, Point.O, Integer.MAX_VALUE);
         dist.put(s, 0);
         queue.add(s);
     }
 
     private int dijkstra(int minSteps, int maxSteps) {
         while (true) {
-            PointAndDir curr = queue.remove();
+            CrucibleState curr = queue.remove();
             done.add(curr);
             int currDist = dist.get(curr);
-            if (curr.p().equals(E)) return currDist;
-            List<PointAndDir> neighbours = Arrays.stream(Point.DIRS)
-                    .filter(d -> !d.equals(curr.d()) && !d.equals(curr.d().neg())) // must turn 90deg
-                    .flatMap(d -> IntStream.range(minSteps, maxSteps + 1).mapToObj(d::mult).map(v -> new PointAndDir(curr.p().add(v), d))) //all neighbours between min and max steps
+            if (curr.p().equals(E) && curr.stepCount() >= minSteps) return currDist;
+            List<CrucibleState> neighbours = Arrays.stream(Point.DIRS)
+                    .filter(d -> !d.equals(curr.lastDir().neg())) // can't turn back
+                    .map(d -> new CrucibleState(curr.p().add(d), d, d.equals(curr.lastDir()) ? curr.stepCount() + 1 : 1))
+                    .filter(s -> s.stepCount() <= maxSteps) //can't go more than maxSteps in one dir
+                    .filter(s -> s.lastDir().equals(curr.lastDir()) || curr.stepCount() >= minSteps) //can't go less than minSteps in one dir
                     .filter(s -> s.p().isInRect(C)) //can't index out ouf bounds
                     .filter(s -> !done.contains(s))
                     .toList();
-            for (PointAndDir n : neighbours) {
-                int newDist = currDist + curr.p().fromTo(n.p()).mapToInt(this::lookup).sum() - lookup(curr.p());
+            for (CrucibleState n : neighbours) {
+                int newDist = currDist + lookup(n.p());
                 if (newDist < dist.getOrDefault(n, Integer.MAX_VALUE)) {
                     queue.remove(n);
                     dist.put(n, newDist);
@@ -64,7 +65,7 @@ public class Day17 extends Day<Integer> {
     @Override
     public Integer getSolution1() {
         reset();
-        return dijkstra(1, 3);
+        return dijkstra(0, 3);
     }
 
     @Override
@@ -75,6 +76,6 @@ public class Day17 extends Day<Integer> {
 
 }
 
-record PointAndDir(Point p, Point d) {
+record CrucibleState(Point p, Point lastDir, int stepCount) {
 }
 
