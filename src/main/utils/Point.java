@@ -74,6 +74,9 @@ public record Point(int x, int y) {
     public boolean isInRect(Point bottomLeft, Point topRight) {
         return x >= bottomLeft.x && x < topRight.x && y >= bottomLeft.y && y < topRight.y;
     }
+    public boolean isInRect(Point topRight) {
+        return isInRect(O, topRight);
+    }
 
     public Point rotate(int i) {
         return i < 0 ? new Point(-1 * y, x) : new Point(y, -1 * x);
