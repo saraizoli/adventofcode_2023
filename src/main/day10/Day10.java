@@ -2,6 +2,7 @@ package main.day10;
 
 import main.utils.Day;
 import main.utils.Point;
+import main.utils.PointAndDir;
 
 import java.util.*;
 
@@ -114,5 +115,3 @@ public class Day10 extends Day<Integer> {
     }
 }
 
-record PointAndDir(Point p, Point d) {
-}

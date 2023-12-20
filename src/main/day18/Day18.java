@@ -20,21 +20,21 @@ public class Day18 extends Day<Long> {
 
     @Override
     public Long getSolution1() {
-        List<PointAndLength> edges = input.stream().map(PointAndLength::from1).toList();
+        List<DirAndLength> edges = input.stream().map(DirAndLength::from1).toList();
         return solve(edges);
     }
 
     //does a simplified https://en.wikipedia.org/wiki/Shoelace_formula#Trapezoid_formula with coords offset for edge width
     //assumes we are digging clockwise, if negative result this assumption is wrong, and we are also measuring the inner area
-    private static long solve(List<PointAndLength> edges) {
+    private static long solve(List<DirAndLength> edges) {
         int l = edges.size();
         long area = 0L;
         long y = 0L;
         int lastTurnDir = getTurnDir(edges.get(l - 1), edges.get(0));
 
         for (int i = 0; i < l; i++) {
-            PointAndLength curr = edges.get(i);
-            PointAndLength next = edges.get((i + 1) % l);
+            DirAndLength curr = edges.get(i);
+            DirAndLength next = edges.get((i + 1) % l);
 
             int nextTurnDir = getTurnDir(curr, next);
             int offset = lastTurnDir + nextTurnDir - 1; //if 2 cw turns -> 1 extra edgepoint, if mix -> 0, if 2 ccw -> -1
@@ -50,28 +50,28 @@ public class Day18 extends Day<Long> {
         return area;
     }
 
-    private static int getTurnDir(PointAndLength curr, PointAndLength next) {
+    private static int getTurnDir(DirAndLength curr, DirAndLength next) {
         return next.d().equals(curr.d().rotate(1)) ? 1 : 0; //1 for cw 0 for ccw
     }
 
     @Override
     public Long getSolution2() {
-        List<PointAndLength> edges = input.stream().map(PointAndLength::from2).toList();
+        List<DirAndLength> edges = input.stream().map(DirAndLength::from2).toList();
         return solve(edges);
     }
 }
 
-record PointAndLength(Point d, int l) {
+record DirAndLength(Point d, int l) {
     private final static Point[] DIR_O = {R, D, L, U};
 
-    public static PointAndLength from1(String s) {
+    public static DirAndLength from1(String s) {
         String[] t = s.split(" ");
-        return new PointAndLength(Point.DIRS_MAP.get(t[0]), Integer.parseInt(t[1]));
+        return new DirAndLength(Point.DIRS_MAP.get(t[0]), Integer.parseInt(t[1]));
     }
 
-    public static PointAndLength from2(String s) {
+    public static DirAndLength from2(String s) {
         String c = s.split(" ")[2];
         int dirInd = c.length() - 2;
-        return new PointAndLength(DIR_O[c.charAt(dirInd) - '0'], Integer.parseInt(c.substring(2, dirInd), 16));
+        return new DirAndLength(DIR_O[c.charAt(dirInd) - '0'], Integer.parseInt(c.substring(2, dirInd), 16));
     }
 }

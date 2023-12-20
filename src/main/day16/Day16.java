@@ -2,6 +2,7 @@ package main.day16;
 
 import main.utils.Day;
 import main.utils.Point;
+import main.utils.PointAndDir;
 
 import java.util.HashSet;
 import java.util.List;
@@ -86,8 +87,5 @@ public class Day16 extends Day<Integer> {
         ).max().orElse(0);
     }
 
-}
-
-record PointAndDir(Point p, Point d) {
 }
 

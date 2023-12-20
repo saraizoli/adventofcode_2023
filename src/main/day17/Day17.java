@@ -2,6 +2,7 @@ package main.day17;
 
 import main.utils.Day;
 import main.utils.Point;
+import main.utils.PointAndDir;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -74,7 +75,3 @@ public class Day17 extends Day<Integer> {
     }
 
 }
-
-record PointAndDir(Point p, Point d) {
-}
-
