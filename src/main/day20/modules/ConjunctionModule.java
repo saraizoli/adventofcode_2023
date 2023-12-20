@@ -1,4 +1,7 @@
-package main.day20;
+package main.day20.modules;
+
+import main.day20.Signal;
+import main.day20.SignalAndRecip;
 
 import java.util.List;
 import java.util.Map;

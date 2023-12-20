@@ -1,4 +1,7 @@
-package main.day20;
+package main.day20.modules;
+
+import main.day20.Signal;
+import main.day20.SignalAndRecip;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,7 +47,7 @@ public abstract class Module {
         return destinations;
     }
 
-    static Module from(String s) {
+    public static Module from(String s) {
         String[] t = s.split(" -> ");
         String curr = t[0];
         List<String> dest = Arrays.asList(t[1].split(", "));
