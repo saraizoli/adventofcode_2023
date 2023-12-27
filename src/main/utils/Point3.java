@@ -30,6 +30,19 @@ public record Point3(int x, int y, int z) {
         return new Point3(c * x, c * y, c * z);
     }
 
+    public Point3 div(int c) {
+        return new Point3(x / c, y / c, z / c);
+    }
+
+    public Stream<Point3> fromTo(Point3 to) {
+        if (this.equals(to)) {
+            return Stream.of(this);
+        }
+        int dist = this.dist0(to);
+        Point3 dir = to.add(this.neg()).div(dist);
+        return IntStream.range(0, dist + 1).mapToObj(i -> this.add(dir.mult(i)));
+    }
+
     public int dist0(Point3 o) {
         return IntStream.of(Math.abs(x - o.x), Math.abs(y - o.y), Math.abs(z - o.z)).max().orElse(0);
     }
