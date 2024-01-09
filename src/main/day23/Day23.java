@@ -4,6 +4,7 @@ import main.utils.Day;
 import main.utils.Point;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Day23 extends Day<Integer> {
     private final int h;
@@ -11,10 +12,12 @@ public class Day23 extends Day<Integer> {
     private final Point e;
     private final Vertex sv;
     private final Vertex ev;
+    private final Vertex pev;
     private final List<String> input;
     private final Map<Point, Vertex> graph = new HashMap<>();
+    private final Map<Vertex, Integer> bestEdges;
 
-    private Set<Integer> paths = new HashSet<>();
+    private int maxPath = 0;
 
 
     private static final Map<Point, Character> BLOCK = Map.of(Point.L, '>', Point.R, '<', Point.U, '^', Point.D, 'v');
@@ -30,6 +33,8 @@ public class Day23 extends Day<Integer> {
         ev = new Vertex(e);
         graph.put(e, ev);
         reduce();
+        pev = graph.values().stream().filter(v -> v.edges().containsKey(ev)).findFirst().orElseThrow();
+        bestEdges = graph.values().stream().collect(Collectors.toMap(v -> v, v -> v.edges().values().stream().mapToInt(i -> i).max().orElse(0)));
     }
 
     private void reduce() { //bfs to contract straight walks
@@ -44,8 +49,6 @@ public class Day23 extends Day<Integer> {
             toQueue = toQueue.stream().filter(e -> !visited.contains(e)).toList();
             queue.addAll(toQueue);
         }
-        System.out.println();
-
     }
 
     private List<VertexAndNextStep> reducePath(VertexAndNextStep curr) { //walk path until it branches, count steps, add vertex at branch
@@ -82,13 +85,13 @@ public class Day23 extends Day<Integer> {
 
     @Override
     public Integer getSolution1() {
-        return longestPath();
+        return longestPath(sv);
     }
 
     @Override
     public Integer getSolution2() {
         addReversePaths(); //modifies the graph, so running solution1 again would not work after this. Can't be bothered to fix this
-        return longestPath();
+        return longestPath(sv);
     }
 
     private char lookup(Point p) {
@@ -96,17 +99,19 @@ public class Day23 extends Day<Integer> {
         return input.get(p.y()).charAt(p.x());
     }
 
-    private Integer longestPath() {
-        paths = new HashSet<>(); //ugly to use field, but convenient
-        longestPath(sv, 0, new HashSet<>());
-        return paths.stream().max(Comparator.comparingInt(i -> i)).orElse(0);
+    private Integer longestPath(Vertex start) {
+        maxPath = 0; //ugly to use field, but convenient
+        longestPath(start, 0, new HashSet<>());
+        return maxPath;
     }
 
     void longestPath(Vertex v, int w, Set<Vertex> visited) { //greedily check all options
+        if (w + bestEdges.entrySet().stream().filter(e -> !visited.contains(e.getKey())).mapToInt(Map.Entry::getValue).sum() <= maxPath)
+            return;
         visited.add(v);
         v.edges().forEach((n, nw) -> {
-            if (n.equals(ev)) {
-                paths.add(w + nw);
+            if (n.equals(pev)) {
+                maxPath = Math.max(maxPath, w + nw + pev.edges().get(ev));
                 return;
             }
             if (!visited.contains(n))

@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 
 public class Day22 extends Day<Long> {
     private final List<Brick> bricks;
-    final Map<Point, Integer> maxZs = new HashMap<>();
-    final Map<Point, Brick> maxBricks = new HashMap<>();
+    Map<Point, Integer> maxZs = new HashMap<>();
+    Map<Point, Brick> maxBricks = new HashMap<>();
 
     public Day22() {
 //        List<String> input = getReader().readAsStringList("day22_sample.txt");
@@ -32,13 +32,15 @@ public class Day22 extends Day<Long> {
 
     @Override
     public Long getSolution1() {
+        maxZs = new HashMap<>();
+        maxBricks = new HashMap<>();
         bricks.forEach(this::drop);
         return bricks.stream().filter(b -> b.over().stream().allMatch(o -> o.under().size() > 1)).count();
     }
 
     @Override
     public Long getSolution2() { //slow, ~5s
-        return bricks.stream().mapToLong(this::destroy).sum();
+        return bricks.parallelStream().mapToLong(this::destroy).sum();
     }
 
     public long destroy(Brick b) { //bfs
