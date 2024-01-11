@@ -60,6 +60,14 @@ public class Day24 extends Day<Long> {
         HailStone h2 = new HailStone(h2r.p().add(h0.p().neg()), h2r.v().add(h0.v().neg()));
         HailStone h3 = new HailStone(h3r.p().add(h0.p().neg()), h3r.v().add(h0.v().neg()));
 
+        HailStone stone = getThrownStone(h1, h2, h3);
+
+        //undo h0 offset
+        Point3L stonePR = stone.p().add(h0.p());
+        return stonePR.x() + stonePR.y() + stonePR.z();
+    }
+
+    private HailStone getThrownStone(HailStone h1, HailStone h2, HailStone h3) {
         BigInteger[] planeNorm = getPlaneNormalVect(h1);
 
         //for 2 hailstones check intersection of trajectory and the plane
@@ -73,11 +81,7 @@ public class Day24 extends Day<Long> {
         //speed vector of the stone is the [diff between intersections]/ [diff between times], stone start point from there triv
         Point3L stoneV = int2.add(int3.neg()).div(t2 - t3);
         Point3L stoneP = int2.add(stoneV.neg().mult(t2));
-
-        //undo h0 offset
-        Point3L stonePR = stoneP.add(h0.p());
-
-        return stonePR.x() + stonePR.y() + stonePR.z();
+        return new HailStone(stoneV, stoneP);
     }
 
     private static BigInteger[] getPlaneNormalVect(HailStone h) {
